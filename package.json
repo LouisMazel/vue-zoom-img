@@ -1,0 +1,24 @@
+{
+  "name": "vue-zoom-img",
+  "version": "0.0.1",
+  "description": "Show image zoom on selected event (click, hover, etc)",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/index.js",
+  "scripts": {
+    "lint": "eslint . --ext .ts",
+    "compile": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json"
+  },
+  "files": [
+    "lib/"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^3.9.7"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^3.7.1",
+    "@typescript-eslint/parser": "^3.7.1",
+    "eslint": "^7.5.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "ESNext",
+    "pretty": true,
+    "strict": true,
+    "outDir": "./lib",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true
+  },
+  "include": ["./index.ts"],
+  "exclude": ["node_modules"]
+}
