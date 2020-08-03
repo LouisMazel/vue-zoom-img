@@ -1,6 +1,6 @@
 {
   "name": "vue-zoom-img",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Show image zoom on selected event (click, hover, etc)",
   "main": "./lib/cjs/index.js",
   "module": "./lib/index.js",
