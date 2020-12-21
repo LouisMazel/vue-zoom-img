@@ -10,6 +10,7 @@
   "rules": {
     "semi": ["warn", "never"],
     "@typescript-eslint/semi": ["warn", "never"],
-    "quotes": ["error", "single"]
+    "quotes": ["error", "single"],
+    "@typescript-eslint/member-delimiter-style": "off"
   }
 }
