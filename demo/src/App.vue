@@ -13,6 +13,12 @@
       <div class="content__wrapper">
         <img v-zoom-img="image" v-for="(image, i) in images" :key="i" :src="image" alt="" />
       </div>
+      <div class="content__wrapper">
+        <img
+          v-zoom-img="`https://louismazel.github.io/maz-ui/_nuxt/img/jellynote.56a5989.jpg`"
+          src="https://louismazel.github.io/maz-ui/_nuxt/img/jellynote.56a5989.jpg"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -21,7 +27,7 @@
 import Vue from 'vue'
 import ZoomImg from './../../index'
 
-const IMAGE_COUNT = 5
+const IMAGE_COUNT = 4
 
 const getRandomInt = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1)) + min
@@ -65,11 +71,13 @@ export default Vue.extend({
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
 
       > img {
         margin-bottom: 5px;
         margin-right: 5px;
+        max-width: 90%;
       }
     }
   }

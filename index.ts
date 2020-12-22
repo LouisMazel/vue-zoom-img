@@ -36,11 +36,15 @@ const style = `
   flex-direction: column;
 }
 
+.maz-zoom-img,
+.maz-zoom-img * {
+  box-sizing: border-box;
+}
+
 .maz-zoom-img__wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
 }
 
 .maz-zoom-img img {
@@ -49,6 +53,7 @@ const style = `
   margin-left: 1rem;
   margin-right: 1rem;
   margin-top: 1rem;
+  min-width: 0;
 }
 
 .maz-zoom-img img,
