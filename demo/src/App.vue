@@ -13,12 +13,6 @@
       <div class="content__wrapper">
         <img v-zoom-img="image" v-for="(image, i) in images" :key="i" :src="image" alt="" />
       </div>
-      <div class="content__wrapper">
-        <img
-          v-zoom-img="`https://louismazel.github.io/maz-ui/_nuxt/img/jellynote.56a5989.jpg`"
-          src="https://louismazel.github.io/maz-ui/_nuxt/img/jellynote.56a5989.jpg"
-        />
-      </div>
     </div>
   </div>
 </template>
