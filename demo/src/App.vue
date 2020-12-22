@@ -24,7 +24,7 @@ import ZoomImg from './../../index'
 const IMAGE_COUNT = 5
 
 const getRandomInt = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 export default Vue.extend({
@@ -34,7 +34,9 @@ export default Vue.extend({
   },
   data() {
     return {
-      images: Array.from(Array(IMAGE_COUNT).keys()).map(() => `http://placekitten.com/${getRandomInt(150, 350)}/${getRandomInt(150, 350)}`)
+      images: Array.from(Array(IMAGE_COUNT).keys()).map(
+        () => `https://www.fillmurray.com/${getRandomInt(150, 350)}/${getRandomInt(150, 350)}`
+      )
     }
   }
 })
