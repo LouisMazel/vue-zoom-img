@@ -45,6 +45,8 @@ const style = `
   display: flex;
   justify-content: center;
   align-items: center;
+  min-width: 0;
+  min-height: 0;
 }
 
 .maz-zoom-img img {
