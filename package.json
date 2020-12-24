@@ -14,12 +14,11 @@
   ],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "typescript": "^3.9.7"
-  },
   "devDependencies": {
+    "typescript": "^3.9.7",
     "@typescript-eslint/eslint-plugin": "^3.7.1",
     "@typescript-eslint/parser": "^3.7.1",
-    "eslint": "^7.5.0"
+    "eslint": "^7.5.0",
+    "vue": "^2.6.12"
   }
 }

@@ -11,7 +11,7 @@
         Click an images
       </h2>
       <div class="content__wrapper">
-        <img v-zoom-img="image" v-for="(image, i) in images" :key="i" :src="image" alt="" />
+        <img v-zoom-img="{ src: image, alt: 'fill murray', scale: true, blur: true }" v-for="(image, i) in images" :key="i" :src="image" alt="" />
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@ export default Vue.extend({
   data() {
     return {
       images: Array.from(Array(IMAGE_COUNT).keys()).map(
-        () => `https://www.fillmurray.com/${getRandomInt(150, 350)}/${getRandomInt(150, 350)}`
+        () => `https://www.fillmurray.com/${getRandomInt(250, 350)}/${getRandomInt(150, 350)}`
       )
     }
   }
