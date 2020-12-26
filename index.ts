@@ -1,4 +1,4 @@
-import { DirectiveOptions } from './node_modules/vue/types/index'
+import { DirectiveOptions } from 'vue'
 
 const style = `
 .maz-zoom-img {
