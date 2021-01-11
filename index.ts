@@ -312,9 +312,7 @@ class VueZoomImg {
   }
 
   private keyboardEventHandler(add: boolean) {
-    console.log('add', this.keydownLister)
     if (add) return document.addEventListener('keydown', this.keydownLister.bind(this))
-    console.log('REMOVE', this.keydownLister)
     document.removeEventListener('keydown', this.keydownLister.bind(this))
   }
 }
