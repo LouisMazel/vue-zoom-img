@@ -22,6 +22,7 @@ const style = `
 }
 
 .maz-zoom-img__wrapper {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -32,10 +33,8 @@ const style = `
 .maz-zoom-img img {
   max-width: 100%;
   max-height: 100%;
-  margin-left: 1rem;
-  margin-right: 1rem;
-  margin-top: 1rem;
   min-width: 0;
+  border-radius: 1rem;
 }
 
 .maz-zoom-img img,
@@ -45,25 +44,49 @@ const style = `
   transform: scale(0.5);
 }
 
-.maz-zoom-img button {
+.maz-zoom-img .maz-zoom-btn {
   margin: 0 auto;
   border: none;
-  background-color: white;
-  height: 2.5rem;
-  min-height: 2.5rem;
-  width: 2.5rem;
-  min-width: 2.5rem;
+  background-color: rgba(17, 17, 17, 0.5);
+  box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.2);
+  height: 2.2rem;
+  min-height: 2.2rem;
+  width: 2.2rem;
+  min-width: 2.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 2.5rem;
+  border-radius: 2.2rem;
   cursor: pointer;
   flex: 0 0 auto;
   outline: none;
 }
 
-.maz-zoom-img button:hover {
-  background-color: #ccc;
+.maz-zoom-img .maz-zoom-btn svg {
+  fill: white;
+}
+
+.maz-zoom-img .maz-zoom-btn.maz-zoom-btn--close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+}
+
+.maz-zoom-img .maz-zoom-btn.maz-zoom-btn--previous {
+  position: absolute;
+  left: 0.5rem;
+  z-index: 1;
+}
+
+.maz-zoom-img .maz-zoom-btn.maz-zoom-btn--next {
+  position: absolute;
+  right: 0.5rem;
+  z-index: 1;
+}
+
+.maz-zoom-img .maz-zoom-btn:hover {
+  background-color: black;
 }
 
 .maz-zoom-img.maz-animate img,
@@ -148,12 +171,13 @@ class VueZoomImg {
     /**
      * Add event listeners
      */
+    el.style.transition = 'all 300ms ease-in-out'
     el.addEventListener('mouseenter', () => this.mouseEnter(el))
     el.addEventListener('mouseleave', () => this.mouseLeave(el))
     el.addEventListener('click', () => this.renderPreview(el, this.options))
   }
 
-  public update(binding: BindingData) {
+  public update(binding: BindingData): void {
     this.options = this.buildOptions(binding)
   }
 
@@ -204,9 +228,10 @@ class VueZoomImg {
 
     const wrapper: HTMLDivElement = document.createElement('div')
     wrapper.classList.add('maz-zoom-img__wrapper')
+    wrapper.append(closeButton)
     hasMultipleInstance ? wrapper.append(buttons[0], img, buttons[1]) : wrapper.append(img)
 
-    container.append(closeButton, wrapper)
+    container.append(wrapper)
 
     document.body.appendChild(container)
     this.keyboardEventHandler(true)
@@ -221,11 +246,11 @@ class VueZoomImg {
     if (this.options.scale) el.style.transform = ''
     if (this.options.blur) el.style.filter = ''
     el.style.zIndex = ''
-    setTimeout(() => (el.style.transition = ''), 300)
+    // setTimeout(() => (el.style.transition = ''), 300)
   }
 
   private mouseEnter(el: HTMLElement): void {
-    el.style.transition = 'all 300ms ease-in-out'
+    // el.style.transition = 'all 300ms ease-in-out'
     el.style.zIndex = '1'
     if (this.options.scale) el.style.transform = 'scale(1.1)'
     if (this.options.blur) el.style.filter = 'blur(2px)'
@@ -253,6 +278,8 @@ class VueZoomImg {
         ? this.nextPreviousImage(iconName === 'navigate_next')
         : null
     }
+    button.classList.add('maz-zoom-btn')
+    button.classList.add(`maz-zoom-btn--${iconName}`)
     return button
   }
 
@@ -311,7 +338,7 @@ class VueZoomImg {
     document.head.append(style)
   }
 
-  private keyboardEventHandler(add: boolean) {
+  private keyboardEventHandler(add: boolean): void {
     if (add) return document.addEventListener('keydown', this.keydownLister.bind(this))
     document.removeEventListener('keydown', this.keydownLister.bind(this))
   }
