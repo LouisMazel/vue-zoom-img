@@ -122,6 +122,7 @@ const svgs = {
 
 class VueZoomImg {
   private options: ZoomImgOptions
+  private keydownHandler: (e: KeyboardEvent) => void
   private defaultOptions: DefaultZoomImgOptions = {
     scale: true,
     blur: true,
@@ -139,6 +140,7 @@ class VueZoomImg {
     }
 
     this.options = this.buildOptions(binding)
+    this.keydownHandler = this.keydownLister.bind(this)
   }
 
   private buildOptions(binding: BindingData): ZoomImgOptions {
@@ -339,8 +341,8 @@ class VueZoomImg {
   }
 
   private keyboardEventHandler(add: boolean): void {
-    if (add) return document.addEventListener('keydown', this.keydownLister.bind(this))
-    document.removeEventListener('keydown', this.keydownLister.bind(this))
+    if (add) return document.addEventListener('keydown', this.keydownHandler)
+    document.removeEventListener('keydown', this.keydownHandler)
   }
 }
 

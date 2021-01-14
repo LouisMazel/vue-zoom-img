@@ -92,9 +92,8 @@ import 'vue-code-highlight/themes/window.css'
 
 const IMAGE_COUNT = 4
 
-const getRandomInt = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min
-}
+const getRandomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
+const getRandomString = () => Math.floor(Math.random() * Math.floor(2)) === 1 ? 'gif' : 'c'
 
 export default Vue.extend({
   name: 'Home',
@@ -107,7 +106,7 @@ export default Vue.extend({
   data() {
     return {
       images: Array.from(Array(IMAGE_COUNT).keys()).map(
-        () => `https://www.placecage.com/gif/${getRandomInt(250, 350)}/${getRandomInt(150, 350)}`
+        () => `https://www.placecage.com/${getRandomString()}/${getRandomInt(250, 350)}/${getRandomInt(150, 350)}`
       )
     }
   }
