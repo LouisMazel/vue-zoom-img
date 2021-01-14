@@ -93,7 +93,7 @@ import 'vue-code-highlight/themes/window.css'
 const IMAGE_COUNT = 4
 
 const getRandomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
-const getRandomString = () => Math.floor(Math.random() * Math.floor(2)) === 1 ? 'gif' : 'c'
+const getRandomString = () => (Math.floor(Math.random() * Math.floor(2)) === 1 ? 'gif' : 'c')
 
 export default Vue.extend({
   name: 'Home',
