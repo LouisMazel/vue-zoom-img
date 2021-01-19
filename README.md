@@ -26,8 +26,20 @@ npm install vue-zoom-img
 
 <template>
   <div>
-    <img v-zoom-img="<PATH_OF_YOUR_PICTURE>" />
-    <img v-zoom-img="{ src: <PATH_OF_YOUR_PICTURE>, alt: '<ALT_STRING_VALUE>', disabled: <TRUE_OR_FALSE>, blur: <TRUE_OR_FALSE>, scale: <TRUE_OR_FALSE> }" />
+    <img
+      src="<PATH_OF_YOUR_PICTURE>"
+      v-zoom-img="<PATH_OF_YOUR_PICTURE>"
+    />
+    <img
+      src="<PATH_OF_YOUR_PICTURE>"
+      v-zoom-img="{
+        src: <PATH_OF_YOUR_PICTURE>,
+        alt: '<ALT_STRING_VALUE>',
+        disabled: <TRUE_OR_FALSE>,
+        blur: <TRUE_OR_FALSE>,
+        scale: <TRUE_OR_FALSE>
+      }"
+    />
   </div>
 </template>
 
