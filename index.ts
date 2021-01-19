@@ -52,6 +52,8 @@ const style = `
   background-color: rgba(86, 87, 117, .7);
   border-radius: 1rem;
   z-index: 2;
+  min-width: 60px;
+  min-height: 60px;
 }
 .maz-zoom-img.maz-animate .maz-zoom-img__loader[hidden] {
   display: none;
