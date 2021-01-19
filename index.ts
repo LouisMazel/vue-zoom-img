@@ -21,13 +21,54 @@ const style = `
   box-sizing: border-box;
 }
 
-.maz-zoom-img__wrapper {
+.maz-zoom-img .maz-zoom-img__wrapper {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   min-width: 0;
   min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
+  transition: all 300ms ease-in-out;
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.maz-zoom-img.maz-animate .maz-zoom-img__wrapper {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.maz-zoom-img.maz-animate .maz-zoom-img__loader {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(86, 87, 117, .7);
+  border-radius: 1rem;
+  z-index: 2;
+}
+.maz-zoom-img.maz-animate .maz-zoom-img__loader[hidden] {
+  display: none;
+}
+
+@-webkit-keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.maz-zoom-img.maz-animate .maz-zoom-img__loader__svg {
+  animation: spin .6s linear infinite;
 }
 
 .maz-zoom-img img {
@@ -35,13 +76,6 @@ const style = `
   max-height: 100%;
   min-width: 0;
   border-radius: 1rem;
-}
-
-.maz-zoom-img img,
-.maz-zoom-img button {
-  transition: all 300ms ease-in-out;
-  opacity: 0;
-  transform: scale(0.5);
 }
 
 .maz-zoom-img .maz-zoom-btn {
@@ -87,12 +121,6 @@ const style = `
 
 .maz-zoom-img .maz-zoom-btn:hover {
   background-color: black;
-}
-
-.maz-zoom-img.maz-animate img,
-.maz-zoom-img.maz-animate button {
-  opacity: 1;
-  transform: scale(1);
 }`
 
 type DefaultZoomImgOptions = {
@@ -117,12 +145,18 @@ interface BindingData {
 const svgs = {
   close: '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>',
   next: '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>',
-  previous: '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>'
+  previous: '<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>',
+  spinner: '<svg width="40px" height="40px" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor" x="0px" y="0px" viewBox="0 0 50 50" xml:space="preserve" class="maz-zoom-img__loader__svg" data-v-6d1cb50c=""><path d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z"></path></svg>'
 } as { [key: string]: string }
 
 class VueZoomImg {
   private options: ZoomImgOptions
+  private loader: HTMLDivElement
+  private wrapper: HTMLDivElement
+  private img: HTMLImageElement
   private keydownHandler: (e: KeyboardEvent) => void
+  private onImgLoadedCallback: EventListener
+  private buttonsAdded: boolean
   private defaultOptions: DefaultZoomImgOptions = {
     scale: true,
     blur: true,
@@ -139,8 +173,21 @@ class VueZoomImg {
       throw new Error('[MazUI](img-preview) src of image must be provided')
     }
 
+    this.buttonsAdded = false
+
     this.options = this.buildOptions(binding)
     this.keydownHandler = this.keydownLister.bind(this)
+
+    this.loader = this.getLoader()
+
+    this.wrapper = document.createElement('div')
+    this.wrapper.classList.add('maz-zoom-img__wrapper')
+    this.wrapper.prepend(this.loader)
+
+
+    this.img = document.createElement('img')
+    this.onImgLoadedCallback = this.onImgLoaded.bind(this)
+    this.imgEventHandler(true)
   }
 
   private buildOptions(binding: BindingData): ZoomImgOptions {
@@ -187,6 +234,7 @@ class VueZoomImg {
     /**
      * Remove all
      */
+    this.imgEventHandler(false)
     el.removeEventListener('click', () => this.renderPreview(el))
     el.removeEventListener('mouseenter', () => this.mouseEnter(el))
     el.removeEventListener('mouseleave', () => this.mouseLeave(el))
@@ -209,31 +257,15 @@ class VueZoomImg {
       }
     })
 
-    const img: HTMLImageElement = document.createElement('img')
     if (typeof options === 'object') {
-      img.setAttribute('src', options.src)
-      img.setAttribute('alt', options.alt)
-      img.id = 'MazImgElement'
-    }
-    img.classList.add('maz-border-radius')
-
-    const buttons = []
-    const closeButton = this.getButton()
-
-    const hasMultipleInstance = this.allInstances.length > 1
-
-    if (hasMultipleInstance) {
-      const previousButton = this.getButton('previous')
-      const nextButton = this.getButton('next')
-      buttons.push(previousButton, nextButton)
+      this.img.setAttribute('src', options.src)
+      this.img.setAttribute('alt', options.alt)
+      this.img.id = 'MazImgElement'
     }
 
-    const wrapper: HTMLDivElement = document.createElement('div')
-    wrapper.classList.add('maz-zoom-img__wrapper')
-    wrapper.append(closeButton)
-    hasMultipleInstance ? wrapper.append(buttons[0], img, buttons[1]) : wrapper.append(img)
+    this.wrapper.append(this.img)
 
-    container.append(wrapper)
+    container.append(this.wrapper)
 
     document.body.appendChild(container)
     this.keyboardEventHandler(true)
@@ -243,24 +275,54 @@ class VueZoomImg {
     }, 100)
   }
 
+  private onImgLoaded(): void {
+    this.wrapper.style.width = `${this.img.width}px`
+    this.loader.hidden = true
+
+    const closeButton: HTMLButtonElement = this.getButton()
+    const buttons: HTMLButtonElement[] = []
+
+    const hasMultipleInstance = this.allInstances.length > 1
+
+    if (!this.buttonsAdded) {
+      this.buttonsAdded = true
+      if (hasMultipleInstance) {
+        const previousButton = this.getButton('previous')
+        const nextButton = this.getButton('next')
+        buttons.push(previousButton, nextButton)
+      }
+
+      this.wrapper.append(closeButton)
+      if (hasMultipleInstance) {
+        this.wrapper.prepend(buttons[0])
+        this.wrapper.append(buttons[1])
+      }
+    }
+  }
+
+  private getLoader(): HTMLDivElement {
+    const loader = document.createElement('div')
+    loader.classList.add('maz-zoom-img__loader')
+    loader.innerHTML = svgs.spinner
+    return loader
+  }
+
 
   private mouseLeave (el: HTMLElement): void {
     if (this.options.scale) el.style.transform = ''
     if (this.options.blur) el.style.filter = ''
     el.style.zIndex = ''
-    // setTimeout(() => (el.style.transition = ''), 300)
   }
 
   private mouseEnter(el: HTMLElement): void {
-    // el.style.transition = 'all 300ms ease-in-out'
     el.style.zIndex = '1'
     if (this.options.scale) el.style.transform = 'scale(1.1)'
     if (this.options.blur) el.style.filter = 'blur(2px)'
   }
 
   private keydownLister (e: KeyboardEvent): void {
+    e.preventDefault()
     if (e.key === 'Escape' || e.key === ' ') {
-      e.preventDefault()
       this.closePreview()
     }
 
@@ -277,8 +339,8 @@ class VueZoomImg {
       iconName === 'close'
         ? this.closePreview()
         : this.allInstances
-        ? this.nextPreviousImage(iconName === 'navigate_next')
-        : null
+          ? this.nextPreviousImage(iconName === 'navigate_next')
+          : null
     }
     button.classList.add('maz-zoom-btn')
     button.classList.add(`maz-zoom-btn--${iconName}`)
@@ -303,11 +365,9 @@ class VueZoomImg {
     }, 300)
   }
 
-  private nextPreviousImage (isNext: boolean): void {
+  private nextPreviousImage(isNext: boolean): void {
     const selectNextInstance = isNext
     const currentInstance: HTMLElement | null = document.querySelector('.maz-zoom-img-instance.maz-is-open')
-
-    const imgElement: HTMLImageElement | null = document.querySelector('#MazImgElement')
 
     const currentInstanceIndex = this.allInstances.findIndex((i) => i === currentInstance)
     const newInstanceIndex = selectNextInstance ? currentInstanceIndex + 1 : currentInstanceIndex - 1
@@ -322,15 +382,18 @@ class VueZoomImg {
 
     const nextInstance = this.allInstances[getNewInstanceIndex()]
 
-    if (nextInstance && imgElement && currentInstance) {
+    if (nextInstance && currentInstance) {
       currentInstance.classList.remove('maz-is-open')
       nextInstance.classList.add('maz-is-open')
 
       const src: string | null = nextInstance.getAttribute('data-src')
       const alt: string | null = nextInstance.getAttribute('data-alt')
 
-      if (src) imgElement.setAttribute('src', src)
-      if (alt) imgElement.setAttribute('alt', alt)
+      this.wrapper.style.width = ''
+      this.loader.hidden = false
+
+      if (src) this.img.setAttribute('src', src)
+      if (alt) this.img.setAttribute('alt', alt)
     }
   }
   private addStyle (styleString: string): void {
@@ -343,6 +406,11 @@ class VueZoomImg {
   private keyboardEventHandler(add: boolean): void {
     if (add) return document.addEventListener('keydown', this.keydownHandler)
     document.removeEventListener('keydown', this.keydownHandler)
+  }
+
+  private imgEventHandler(add: boolean): void {
+    if (add) return this.img.addEventListener('load', this.onImgLoadedCallback)
+    this.img.removeEventListener('load', this.onImgLoadedCallback)
   }
 }
 
