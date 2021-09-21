@@ -341,7 +341,7 @@ class VueZoomImg {
       iconName === 'close'
         ? this.closePreview()
         : this.allInstances
-          ? this.nextPreviousImage(iconName === 'navigate_next')
+          ? this.nextPreviousImage(iconName === 'next')
           : null
     }
     button.classList.add('maz-zoom-btn')
